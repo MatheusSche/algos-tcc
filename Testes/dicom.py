@@ -64,6 +64,7 @@ def lsb_encode(data):
 def encode(image):
     dim = image.shape
     data = image.ravel()
+    print(data)
     
     data = lsb_encode(data)
     
