@@ -39,14 +39,13 @@ img_bbox = img_bbox.convert('RGB')
 img_bbox = np.asarray(img_bbox)
 
 
-
-
 # modify DICOM tags
 ds.PhotometricInterpretation = 'RGB'
 ds.SamplesPerPixel = 3
 ds.BitsAllocated = 8
 ds.BitsStored = 8
 ds.HighBit = 7
+ds.PixelRepresentation = 0
 ds.add_new(0x00280006, 'US', 0)
 ds.is_little_endian = True
 ds.fix_meta_info()
@@ -63,6 +62,10 @@ plt.imshow(ds.pixel_array)
 
 
 ds.save_as(OUTPUT_DICOM_PATH)
+
+for x in ds.pixel_array:
+    for y in x:
+        print(y)
 
 
 
