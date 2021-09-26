@@ -20,20 +20,16 @@ BEHAVIORS:
     test
         * runs the unit tests
 """
-import os.path
-import argparse
 
-#from .bpcs_steg_decode import decode
+
 from bpcs_steg_encode import encode
 from bpcs_steg_capacity import capacity
-#from .bpcs_steg_test import test_all
-
 
 alpha = 0.45
 vslfile = 'other.dcm'
 #vslfile = 'vessel.png'
 msgfile = 'message.txt' # can be any type of file
-encfile = 'encoded.png'
+encfile = 'some_secret.dcm'
 msgfile_decoded = 'tmp.txt'
 
 capacity(vslfile, alpha) # check max size of message you can embed in vslfile

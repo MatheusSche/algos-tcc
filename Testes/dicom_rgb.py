@@ -63,10 +63,6 @@ plt.imshow(ds.pixel_array)
 
 ds.save_as(OUTPUT_DICOM_PATH)
 
-for x in ds.pixel_array:
-    for y in x:
-        print(y)
-
 
 
 

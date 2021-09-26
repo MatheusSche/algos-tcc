@@ -8,31 +8,25 @@ Created on Sun Sep  5 21:35:49 2021
 import numpy as np
 from PIL import Image 
 import pydicom as dicom
+import matplotlib.pylab as plt
+import cv2
 
 from logger import log
 from array_bit_plane import BitPlane
-""" 
-def load_image(infile, as_rgb):
-    get_im_mode = lambda is_rgb: 'RGB' if is_rgb else 'L'
-    x = Image.open(infile).convert(get_im_mode(as_rgb))
-    print(x)
-    return x
-"""
+
 def load_image(infile, as_rgb):
     
     ds = dicom.dcmread(infile)
     img = ds.pixel_array
    
-    return img
-    #width, height, bits_layers = img.shape
+    return img, ds
 
-    #array = np.array(img.ravel())
-    #array = array.reshape(-1, 3)
+def write_image(outfile, im, ds):
+    # save pixel data and dicom file
+    ds.PixelData = im.tobytes()
+    
+    ds.save_as(outfile)
 
-
-
-def write_image(outfile, im):
-    im.save(outfile, outfile.split('.')[-1])
 
 def image_to_array(im):
     return np.array(im)
@@ -47,13 +41,14 @@ class ActOnImage(object):
         self.bitplane  = bitplane
         self.gray = gray
         self.nbits_per_layer = nbits_per_layer
+        self.ds = None
         self.arr = self.read(infile)
         log.critical('Loaded image as array with shape {0}'.format(self.arr.shape))
 
     def read(self, infile):
-        im = load_image(infile, self.as_rgb)
+        im, self.ds = load_image(infile, self.as_rgb)
         arr = image_to_array(im)
-        print(arr)
+        
         if self.bitplane:
             arr = BitPlane(arr, self.gray).slice(self.nbits_per_layer)
         return arr
@@ -66,4 +61,4 @@ class ActOnImage(object):
             arr = BitPlane(arr, self.gray).stack()
         im = array_to_image(arr)
         log.critical('Loaded new array as image')
-        write_image(outfile, im)
+        write_image(outfile, im, self.ds)
