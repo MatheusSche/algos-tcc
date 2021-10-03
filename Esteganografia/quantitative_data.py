@@ -15,6 +15,8 @@ from skimage.metrics import structural_similarity as ssim
 
 INDEX = 0
 
+individual_values = []
+
 def open_image(img_path):
     ds = pydicom.dcmread(img_path)
     img = ds.pixel_array 
@@ -69,7 +71,7 @@ def compare_images(original_path, path, arquivo_original, method):
     print('------------------------------------------------------------------')
     
     
-    
+    individual_values.append((arquivo_original, method, result_ssd, result_sad, result_mad, result_ssim))
     
     return result_ssd, result_sad, result_mad, result_ssim
 
@@ -123,10 +125,25 @@ for diretorio, subpastas, arquivos in os.walk(pasta):
     for arquivo in arquivos:
         path = os.path.join(os.path.realpath(diretorio), arquivo)
         
-        soma_ssd_lsb, soma_sad_lsb, soma_mad_lsb, soma_ssim_lsb = find_equivalent_method(path, arquivo, 'lsb')
-        soma_ssd_dct, soma_sad_dct, soma_mad_dct, soma_ssim_dct = find_equivalent_method(path, arquivo, 'dct')
-        soma_ssd_bpcs, soma_sad_bpcs, soma_mad_bpcs, soma_ssim_bpcs = find_equivalent_method(path, arquivo, 'bpcs')
+        ssd_lsb, sad_lsb, mad_lsb, ssim_lsb = find_equivalent_method(path, arquivo, 'lsb')
+        ssd_dct, sad_dct, mad_dct, ssim_dct = find_equivalent_method(path, arquivo, 'dct')
+        ssd_bpcs, sad_bpcs, mad_bpcs, ssim_bpcs = find_equivalent_method(path, arquivo, 'bpcs')
         print(arquivo)
+        
+        soma_ssd_lsb += ssd_lsb
+        soma_sad_lsb += sad_lsb
+        soma_mad_lsb += mad_lsb
+        soma_ssim_lsb += ssim_lsb
+        
+        soma_ssd_dct += ssd_dct
+        soma_sad_dct += sad_dct
+        soma_mad_dct += mad_dct
+        soma_ssim_dct += ssim_dct
+        
+        soma_ssd_bpcs += ssd_bpcs
+        soma_sad_bpcs += sad_bpcs
+        soma_mad_bpcs += mad_bpcs
+        soma_ssim_bpcs += ssim_bpcs
         
 
 print()
@@ -136,5 +153,12 @@ print('          ',  '  SSD   ', '   SAD   ', '    MAD    ', 'SSIM')
 print('  LSB     ',  soma_ssd_lsb/10,  soma_sad_lsb/10, soma_mad_lsb/10, soma_ssim_lsb/10)
 print('  DCT     ',  soma_ssd_dct/10,  soma_sad_dct/10, soma_mad_dct/10, soma_ssim_dct/10)
 print('  BPCS    ',  soma_ssd_bpcs/10, soma_sad_bpcs/10,soma_mad_bpcs/10, soma_ssim_bpcs/10)
+
+
+print()
+
+
+for imagem in individual_values:
+    print(imagem)
         
         
