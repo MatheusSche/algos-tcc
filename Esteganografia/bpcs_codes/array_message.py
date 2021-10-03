@@ -9,8 +9,8 @@ from math import ceil
 import numpy as np
 from functools import reduce
 
-from logger import log
-from bpcs_steg import conjugate, arr_bpcs_complexity, max_bpcs_complexity, checkerboard
+from bpcs_codes.logger import log
+from bpcs_codes.bpcs_steg import conjugate, arr_bpcs_complexity, max_bpcs_complexity, checkerboard
 
 def get_conj_grid_prefix(dims, alpha):
     """

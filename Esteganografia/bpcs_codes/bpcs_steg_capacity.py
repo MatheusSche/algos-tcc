@@ -10,11 +10,11 @@ import os.path
 import numpy as np
 import matplotlib.pyplot as plt
 
-from logger import log
-from act_on_image import ActOnImage
-from bpcs_steg import arr_bpcs_complexity, conjugate, max_bpcs_complexity
-from array_message import get_n_message_grids
-from array_grid import get_next_grid_dims
+from bpcs_codes.logger import log
+from bpcs_codes.act_on_image import ActOnImage
+from bpcs_codes.bpcs_steg import arr_bpcs_complexity, conjugate, max_bpcs_complexity
+from bpcs_codes.array_message import get_n_message_grids
+from bpcs_codes.array_grid import get_next_grid_dims
 
 def histogram_of_complexity(arr, grid_size, alpha, comp_fcn):
     log.critical('Creating histograms of image complexity...')

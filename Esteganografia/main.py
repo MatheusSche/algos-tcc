@@ -1,36 +1,95 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Sep  5 21:34:05 2021
+Created on Sat Oct  2 21:39:48 2021
 
-@author: mathe
+@author: matheus.schenatto
 """
-"""
-BPCS Steganography: encoding/decoding messages hidden in a vessel image
-Source: http://web.eece.maine.edu/~eason/steg/SPIE98.pdf
-BEHAVIORS:
-    encoding
-        * expects a vessel image file, message file, and alpha value
-        * hides the contents of a file inside a vessel image
-    decoding
-        * expects a vessel image file, and alpha value
-        * recovers the message stored inside a vessel image
-    capacity
-        * expects a vessel image file and alpha value
-        * assesses the maximum size of a message that could be encoded within the vessel image
-    test
-        * runs the unit tests
-"""
+import os
+import pydicom
+import matplotlib.pylab as plt
+from lsb import main_lsb
+from bpcs import main_bpcs
+from dct import main_dct
+
+pasta = './vessels_rgb'
+
+index = 0
+
+for diretorio, subpastas, arquivos in os.walk(pasta):
+    for arquivo in arquivos:
+        path = os.path.join(os.path.realpath(diretorio), arquivo)
+        
+        ###################################################################
+        # BPCS PART
+        
+        image = main_bpcs(path, 'HI!')
+        output_file = "./steg_objects/" + "" + "bpcs_" + arquivo
+        
+        image.save_as(output_file)
+        
+        index_plot = index + 10
+        
+        plt.figure(index_plot)
+        plt.imshow(image.pixel_array)
+        
+        ###################################################################
+        
+        ###################################################################
+        # LSB PART
+        
+        image = main_lsb(path, 'HI!')
+        output_file = "./steg_objects/" + "" + "lsb_" + arquivo
+        
+        image.save_as(output_file)
+        
+        index_plot = index + 20
+        
+        plt.figure(index_plot)
+        plt.imshow(image.pixel_array)
+        
+        ###################################################################
+        
+        ###################################################################
+        # DCT PART
+        try:
+            image = main_dct(path, 'HI!')
+            output_file = "./steg_objects/" + "" + "dct_" + arquivo
+            
+            image.save_as(output_file)
+            
+            index_plot = index + 30
+    
+            plt.figure(index_plot)
+            plt.imshow(image.pixel_array)
+        
+        except Exception as e:
+            print(e)
+            print()
+            print(arquivo)
+            print()
+      
+        
+    
+        ###################################################################
+        
+        index += 1
+       
 
 
-from bpcs_steg_encode import encode
-from bpcs_steg_capacity import capacity
+'''
+image = main_lsb('other.dcm', 'HI!', 'SAD')
 
-alpha = 0.45
-vslfile = 'other.dcm'
-#vslfile = 'vessel.png'
-msgfile = 'message.txt' # can be any type of file
-encfile = 'some_secret.dcm'
-msgfile_decoded = 'tmp.txt'
+plt.figure(1)
+plt.imshow(image.pixel_array)
 
-capacity(vslfile, alpha) # check max size of message you can embed in vslfile
-encode(vslfile, msgfile, encfile, alpha) # embed msgfile in vslfile, write to encfile
+
+image = main_bpcs('other.dcm', 'HI!')
+
+plt.figure(2)
+plt.imshow(image.pixel_array)
+
+image = main_dct('other.dcm', 'HI!')
+
+plt.figure(3)
+plt.imshow(image.pixel_array)
+'''

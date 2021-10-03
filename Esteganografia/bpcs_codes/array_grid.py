@@ -7,7 +7,7 @@ Created on Sun Sep  5 21:37:56 2021
 
 
 import itertools
-from logger import log
+from bpcs_codes.logger import log
 from functools import reduce
 
 def get_next_grid_dims(arr, dims):

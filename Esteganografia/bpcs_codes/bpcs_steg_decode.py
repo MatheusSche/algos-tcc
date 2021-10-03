@@ -7,11 +7,11 @@ Created on Sun Sep 26 16:01:18 2021
 
 import numpy as np
 
-from logger import log
-from array_grid import get_next_grid_dims
-from act_on_image import ActOnImage
-from array_message import write_conjugated_message_grids
-from bpcs_steg import arr_bpcs_complexity
+from bpcs_codes.logger import log
+from bpcs_codes.array_grid import get_next_grid_dims
+from bpcs_codes.act_on_image import ActOnImage
+from bpcs_codes.array_message import write_conjugated_message_grids
+from bpcs_codes.bpcs_steg import arr_bpcs_complexity
 
 def remove_message_from_vessel(arr, alpha, grid_size):
     messages = []

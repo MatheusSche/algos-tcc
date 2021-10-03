@@ -7,11 +7,11 @@ Created on Sun Sep  5 21:34:05 2021
 
 import numpy as np
 
-from logger import log
-from act_on_image import ActOnImage
-from array_message import read_message_grids, get_next_message_grid_sized
-from array_grid import get_next_grid_dims
-from bpcs_steg import arr_bpcs_complexity, conjugate
+from bpcs_codes.logger import log
+from bpcs_codes.act_on_image import ActOnImage
+from bpcs_codes.array_message import read_message_grids, get_next_message_grid_sized
+from bpcs_codes.array_grid import get_next_grid_dims
+from bpcs_codes.bpcs_steg import arr_bpcs_complexity, conjugate
 
 ALIVE, CONJUGATING, DEAD = 0,1,2
 def get_message_and_status(message, dims, conjugated, status, alpha):
@@ -95,4 +95,6 @@ class BPCSEncodeImage(ActOnImage):
 def encode(infile, messagefile, outfile, alpha=0.45):
     x = BPCSEncodeImage(infile, as_rgb=True, bitplane=True, gray=True, nbits_per_layer=8)
     arr = x.modify(messagefile, alpha)
-    x.write(outfile, arr)
+    ds_file = x.write(outfile, arr)
+    
+    return ds_file

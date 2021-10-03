@@ -11,8 +11,8 @@ import pydicom as dicom
 import matplotlib.pylab as plt
 import cv2
 
-from logger import log
-from array_bit_plane import BitPlane
+from bpcs_codes.logger import log
+from bpcs_codes.array_bit_plane import BitPlane
 
 def load_image(infile, as_rgb):
     
@@ -26,6 +26,8 @@ def write_image(outfile, im, ds):
     ds.PixelData = im.tobytes()
     
     ds.save_as(outfile)
+    
+    return ds
 
 
 def image_to_array(im):
@@ -61,4 +63,6 @@ class ActOnImage(object):
             arr = BitPlane(arr, self.gray).stack()
         im = array_to_image(arr)
         log.critical('Loaded new array as image')
-        write_image(outfile, im, self.ds)
+        ds_return = write_image(outfile, im, self.ds)
+        
+        return ds_return

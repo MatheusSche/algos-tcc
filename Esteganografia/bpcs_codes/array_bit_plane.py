@@ -7,7 +7,7 @@ Created on Sun Sep  5 21:50:25 2021
 
 import itertools
 import numpy as np
-from logger import log
+from bpcs_codes.logger import log
 
 def xor_lists(a, b):
     assert len(a) == len(b)
