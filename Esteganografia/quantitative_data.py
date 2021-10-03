@@ -11,10 +11,24 @@ import matplotlib.pylab as plt
 import cv2
 import numpy as np
 
+from skimage.metrics import structural_similarity as ssim
+
+INDEX = 0
+
 def open_image(img_path):
     ds = pydicom.dcmread(img_path)
     img = ds.pixel_array 
     return img
+
+def test_ssim(A, B):
+    grayA = cv2.cvtColor(A, cv2.COLOR_BGR2GRAY)
+    grayB = cv2.cvtColor(B, cv2.COLOR_BGR2GRAY)
+    (score, diff) = ssim(grayA, grayB, full=True)
+
+    plt.figure(1)    
+    plt.imshow(diff)
+    
+    return score
 
 def ssd(A, B):
     s = ((A-B)**2).sum()
@@ -49,8 +63,15 @@ def compare_images(original_path, path, arquivo_original, method):
     result_mad = mad(A, B)
     print(result_mad)
     print('------------------------------------------------------------------')
+    print('SSIM')
+    result_ssim = test_ssim(A, B)
+    print(result_ssim)
+    print('------------------------------------------------------------------')
     
-    return result_ssd, result_sad, result_mad
+    
+    
+    
+    return result_ssd, result_sad, result_mad, result_ssim
 
 
 def find_equivalent_method(original_path, arquivo_original, method):
@@ -59,6 +80,7 @@ def find_equivalent_method(original_path, arquivo_original, method):
     soma_ssd = 0
     soma_sad = 0
     soma_mad = 0
+    soma_ssim = 0
     
     for diretorio, subpastas, arquivos in os.walk(pasta_02):
         for arquivo in arquivos:
@@ -71,12 +93,13 @@ def find_equivalent_method(original_path, arquivo_original, method):
             
             if arquivo.startswith(method) and exame_part_original == exame_part_method:
                 print(exame_part_original, exame_part_method)
-                a,b,c = compare_images(original_path, path, arquivo_original, method)
+                a,b,c,d = compare_images(original_path, path, arquivo_original, method)
                 soma_ssd += a
                 soma_sad += b
                 soma_mad += c
+                soma_ssim += d
     
-    return soma_ssd, soma_sad, soma_mad
+    return soma_ssd, soma_sad, soma_mad, soma_ssim
 
 
 pasta = './vessels_rgb'
@@ -84,31 +107,34 @@ pasta = './vessels_rgb'
 soma_ssd_lsb = 0
 soma_sad_lsb = 0
 soma_mad_lsb = 0
+soma_ssim_lsb = 0
 
 soma_ssd_dct = 0
 soma_sad_dct = 0
 soma_mad_dct = 0
+soma_ssim_dct = 0
 
 soma_ssd_bpcs = 0
 soma_sad_bpcs = 0
 soma_mad_bpcs = 0
+soma_ssim_bpcs = 0
 
 for diretorio, subpastas, arquivos in os.walk(pasta):
     for arquivo in arquivos:
         path = os.path.join(os.path.realpath(diretorio), arquivo)
         
-        soma_ssd_lsb, soma_sad_lsb, soma_mad_lsb = find_equivalent_method(path, arquivo, 'lsb')
-        soma_ssd_dct, soma_sad_dct, soma_mad_dct = find_equivalent_method(path, arquivo, 'dct')
-        soma_ssd_bpcs, soma_sad_bpcs, soma_mad_bpcs = find_equivalent_method(path, arquivo, 'bpcs')
+        soma_ssd_lsb, soma_sad_lsb, soma_mad_lsb, soma_ssim_lsb = find_equivalent_method(path, arquivo, 'lsb')
+        soma_ssd_dct, soma_sad_dct, soma_mad_dct, soma_ssim_dct = find_equivalent_method(path, arquivo, 'dct')
+        soma_ssd_bpcs, soma_sad_bpcs, soma_mad_bpcs, soma_ssim_bpcs = find_equivalent_method(path, arquivo, 'bpcs')
         print(arquivo)
         
 
 print()
 print('----------------------------------------------------------------------')
 print('RESULTADOS FINAIS !!!!')
-print('          ',  '  SSD   ', '   SAD   ', '    MAD    ')
-print('  LSB     ',  soma_ssd_lsb/10,  soma_sad_lsb/10, soma_mad_lsb/10)
-print('  DCT     ',  soma_ssd_dct/10,  soma_sad_dct/10, soma_mad_dct/10)
-print('  BPCS    ',  soma_ssd_bpcs/10, soma_sad_bpcs/10,soma_mad_bpcs/10)
+print('          ',  '  SSD   ', '   SAD   ', '    MAD    ', 'SSIM')
+print('  LSB     ',  soma_ssd_lsb/10,  soma_sad_lsb/10, soma_mad_lsb/10, soma_ssim_lsb/10)
+print('  DCT     ',  soma_ssd_dct/10,  soma_sad_dct/10, soma_mad_dct/10, soma_ssim_dct/10)
+print('  BPCS    ',  soma_ssd_bpcs/10, soma_sad_bpcs/10,soma_mad_bpcs/10, soma_ssim_bpcs/10)
         
         
