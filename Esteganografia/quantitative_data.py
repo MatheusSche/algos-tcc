@@ -10,6 +10,7 @@ import pydicom
 import matplotlib.pylab as plt
 import cv2
 import numpy as np
+import imutils
 
 from skimage.metrics import structural_similarity as ssim
 
@@ -27,8 +28,9 @@ def test_ssim(A, B):
     grayB = cv2.cvtColor(B, cv2.COLOR_BGR2GRAY)
     (score, diff) = ssim(grayA, grayB, full=True)
 
-    plt.figure(1)    
-    plt.imshow(diff)
+    #plt.figure(1)    
+    #plt.imshow(diff)
+    destaca_diferencas(A, B, diff)
     
     return score
 
@@ -45,6 +47,32 @@ def mad(A, B):
    s = np.max(np.abs(np.array(A) - np.array(B)))
    #print(np.abs(np.array(A) - np.array(B)))
    return s
+
+def destaca_diferencas(imageA, imageB, diff):
+    
+    # threshold the difference image, followed by finding contours to
+    # obtain the regions of the two input images that differ
+    diff = (diff * 255).astype("uint8")
+    thresh = cv2.threshold(diff, 0, 255,
+    	cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+    	cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+    
+    for c in cnts:
+    	# compute the bounding box of the contour and then draw the
+    	# bounding box on both input images to represent where the two
+    	# images differ
+    	(x, y, w, h) = cv2.boundingRect(c)
+    	cv2.rectangle(imageA, (x, y), (x + w, y + h), (0, 0, 255), 2)
+    	cv2.rectangle(imageB, (x, y), (x + w, y + h), (0, 0, 255), 2)
+    # show the output images
+    cv2.imshow("Original", imageA)
+    cv2.imshow("Modified", imageB)
+    cv2.imshow("Diff", diff)
+    #cv2.imshow("Thresh", thresh)
+    cv2.waitKey(0)
+
 
 def compare_images(original_path, path, arquivo_original, method):
     print('------------------------------------------------------------------')
