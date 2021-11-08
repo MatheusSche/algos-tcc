@@ -1,0 +1,144 @@
+#:kivy 1.0
+#:import Factory kivy.factory.Factory
+
+WindowManager:
+    FirstWindow:
+    SecondWindow:
+    ThirdWindow:
+    FourthWindow:
+
+<MyPopup@Popup>
+    auto_dismiss: True
+    size_hint: 0.6, 0.2
+    pos_hint: {"x":0.2, "top": 0.9}
+    title: "RSA"
+    Label:
+        id: "popup_id"
+        text: "Chaves geradas com sucesso"
+        font_size: 24
+
+<FirstWindow>:
+    name: "first"
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+
+        Label:
+            id: "first_label"
+            text: "Bem vindo!"
+            font_size: 32
+
+        BoxLayout:
+            orientation: "horizontal"
+            size: root.width, root.height
+
+            Button:
+                text: "Criptografia"
+                font_size: 32
+                on_release: 
+                    app.root.current = "cripto"
+                    root.manager.transition.direction = "left"
+            Button:
+                text: "Esteganografia\nEsconder"
+                font_size: 32
+                on_release: 
+                    app.root.current = "esconder"
+                    root.manager.transition.direction = "left"
+            Button:
+                text: "Esteganografia\nRevelar"
+                font_size: 32
+                on_release: 
+                    app.root.current = "revelar"
+                    root.manager.transition.direction = "left"
+
+
+
+<SecondWindow>:
+    name: "esconder"
+
+    BoxLayout:
+        orientation: "horizontal"
+    
+        BoxLayout:
+            orientation: "vertical"
+            BoxLayout:
+                orientation: "vertical"
+                size: root.width, root.height
+
+                Button:
+                    text: "Imagem"
+                    font_size: 32
+                    on_press: root.busca_imagem()
+                Button:
+                    text: "Chave"
+                    font_size: 32
+                    on_release: root.busca_imagem()
+                Button:
+                    text: "Criptografar"
+                    font_size: 32
+                    on_release: root.criptografa()
+                Button:
+                    text: "Esteganografia"
+                    font_size: 32
+                    on_release: root.get_text()
+                Button:
+                    text: "Voltar"
+                    font_size: 32
+                    on_release: 
+                        app.root.current = "first"
+                        root.manager.transition.direction = "right"
+
+                Label:
+                    id: "second_label02"
+                    text: "Digite o Texto"
+                    font_size: 32
+
+                TextInput:
+                    id: input
+                    hint_text: "Texto a ser criptografado."
+                    font_size: 32
+                    size_hint: 1.0, 3.0
+
+        BoxLayout:
+            orientation: "vertical"
+
+            BoxLayout:
+                orientation: "vertical"
+                size: root.width, root.height
+
+                Image:
+                    source:  root.imagem_original   
+
+                Label:
+                    id: "second_label04"
+                    text: "Texto Criptografado"
+                    font_size: 32
+                    size_hint: 1.0, 0.5
+
+        
+
+<ThirdWindow>:
+    name: "cripto"
+
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+
+        Label:
+            id: "third_label"
+            text: "Algoritmo RSA:\nChave Pública e Privada"
+            font_size: 32
+
+        Button:
+            text: "Gerar Chaves"
+            font_size: 32
+            on_release: 
+                root.gerar_chaves()
+                Factory.MyPopup().open()
+                app.root.current = "first"
+                root.manager.transition.direction = "right"
+
+
+<FourthWindow>:
+    name: "revelar"
