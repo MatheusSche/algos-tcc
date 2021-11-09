@@ -39,8 +39,10 @@ WindowManager:
 
         Label:
             id: "first_label"
-            text: "Bem vindo!"
+            text: "Bem vindo!\nProtótipo de Esteganografia e Criptografia"
             font_size: 32
+            valign: 'top'
+            halign: 'center'
 
         BoxLayout:
             orientation: "horizontal"
@@ -67,11 +69,10 @@ WindowManager:
         BoxLayout:
             orientation: "horizontal"
             size: root.width, root.height
-
+            size_hint: 1.0, 0.2
             Button:
                 text: "Sobre"
-                font_size: 32
-                size_hint: 0.2, 0.4
+                font_size: 25
                 on_release: 
                     app.root.current = "sobreum"
                     root.manager.transition.direction = "up"
