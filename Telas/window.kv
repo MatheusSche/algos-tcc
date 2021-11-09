@@ -6,6 +6,7 @@ WindowManager:
     SecondWindow:
     ThirdWindow:
     FourthWindow:
+    FiveWindow:
 
 <MyPopup@Popup>
     auto_dismiss: True
@@ -16,6 +17,18 @@ WindowManager:
         id: "popup_id"
         text: "Chaves geradas com sucesso"
         font_size: 24
+
+<PopupEstego@Popup>
+    auto_dismiss: True
+    size_hint: 0.6, 0.4
+    pos_hint: {"x":0.2, "top": 0.9}
+    title: "Esteganografia"
+    Label:
+        id: "popup_id_estego"
+        text: "O processo de ocultar o texto criptografado através do algoritmo de Esteganografia LSB foi concluído com sucesso. O arquivo foi gerado na pasta Imagens/dcm"
+        text_size: self.width-20, self.height-20
+        valign: 'middle'
+        halign: 'center'
 
 <FirstWindow>:
     name: "first"
@@ -46,12 +59,22 @@ WindowManager:
                     app.root.current = "esconder"
                     root.manager.transition.direction = "left"
             Button:
-                text: "Esteganografia\nRevelar"
+                text: "Esteganografia\nExtrair"
                 font_size: 32
                 on_release: 
                     app.root.current = "revelar"
                     root.manager.transition.direction = "left"
+        BoxLayout:
+            orientation: "horizontal"
+            size: root.width, root.height
 
+            Button:
+                text: "Sobre"
+                font_size: 32
+                size_hint: 0.2, 0.4
+                on_release: 
+                    app.root.current = "sobreum"
+                    root.manager.transition.direction = "up"
 
 
 <SecondWindow>:
@@ -79,9 +102,11 @@ WindowManager:
                     font_size: 32
                     on_release: root.criptografa()
                 Button:
-                    text: "Esteganografia"
+                    text: "Esteganografia -> Ocultar"
                     font_size: 32
-                    on_release: root.get_text()
+                    on_release: 
+                        root.aplica_esteganografia()
+                        Factory.PopupEstego().open()
                 Button:
                     text: "Voltar"
                     font_size: 32
@@ -90,14 +115,13 @@ WindowManager:
                         root.manager.transition.direction = "right"
 
                 Label:
-                    id: "second_label02"
                     text: "Digite o Texto"
-                    font_size: 32
+                    font_size: 25
 
                 TextInput:
                     id: input
                     hint_text: "Texto a ser criptografado."
-                    font_size: 32
+                    font_size: 20
                     size_hint: 1.0, 3.0
 
         BoxLayout:
@@ -110,13 +134,11 @@ WindowManager:
                 Image:
                     source:  root.imagem_original   
 
-                Label:
-                    id: "second_label04"
-                    text: "Texto Criptografado"
-                    font_size: 32
+                TextInput:
+                    id: inputBlocked
+                    text: root.texto_criptografado
+                    font_size: 20
                     size_hint: 1.0, 0.5
-
-        
 
 <ThirdWindow>:
     name: "cripto"
@@ -127,18 +149,108 @@ WindowManager:
 
         Label:
             id: "third_label"
-            text: "Algoritmo RSA:\nChave Pública e Privada"
+            text: "Algoritmo RSA\nChave Pública e Privada"
             font_size: 32
 
-        Button:
-            text: "Gerar Chaves"
-            font_size: 32
-            on_release: 
-                root.gerar_chaves()
-                Factory.MyPopup().open()
-                app.root.current = "first"
-                root.manager.transition.direction = "right"
+        BoxLayout:
+            orientation: "horizontal"
+            Button:
+                text: "Gerar Chaves"
+                font_size: 32
+                on_release: 
+                    root.gerar_chaves()
+                    Factory.MyPopup().open()
+                    app.root.current = "first"
+                    root.manager.transition.direction = "right"
+            Button:
+                text: "Voltar"
+                font_size: 32
+                on_release: 
+                    app.root.current = "first"
+                    root.manager.transition.direction = "right"
+            
 
 
 <FourthWindow>:
     name: "revelar"
+
+    BoxLayout:
+        orientation: "horizontal"
+    
+        BoxLayout:
+            orientation: "vertical"
+            BoxLayout:
+                orientation: "vertical"
+                size: root.width, root.height
+
+                Button:
+                    text: "Imagem"
+                    font_size: 32
+                    on_press: root.busca_imagem()
+                Button:
+                    text: "Chave"
+                    font_size: 32
+                    on_press: root.busca_imagem()
+                Button:
+                    text: "Esteganografia -> Extrair"
+                    font_size: 32
+                    on_release: root.decode_esteganografia()
+                Button:
+                    text: "Descriptografar"
+                    font_size: 32
+                    on_release: root.decripta()
+                Button:
+                    text: "Voltar"
+                    font_size: 32
+                    on_release: 
+                        app.root.current = "first"
+                        root.manager.transition.direction = "right"
+                Label:
+                    text: "Texto Criptografado"
+                    font_size: 25
+
+                TextInput:
+                    id: inputtextquatro
+                    hint_text: "Criptografia"
+                    font_size: 20
+                    size_hint: 1.0, 3.0
+                    text: root.encriptedt_text_kv
+
+        BoxLayout:
+            orientation: "vertical"
+
+            BoxLayout:
+                orientation: "vertical"
+                size: root.width, root.height
+
+                Image:
+                    source:  root.imagem_original   
+
+                TextInput:
+                    id: "second_label04"
+                    hint_text: "Legível"
+                    font_size: 20
+                    size_hint: 1.0, 0.5
+                    text: root.display_texto_pronto
+
+<FiveWindow>:
+    name: "sobreum"
+
+    GridLayout:
+        size_hint: .9, .9
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        rows:1
+        Label:
+            text: "I don't suffer from insanity, I enjoy every minute of it"
+            text_size: self.width-20, self.height-20
+            valign: 'top'
+        Label:
+            text: "When I was born I was so surprised; I didn't speak for a year and a half."
+            text_size: self.width-20, self.height-20
+            valign: 'middle'
+            halign: 'center'
+        Label:
+            text: "A consultant is someone who takes a subject you understand and makes it sound confusing"
+            text_size: self.width-20, self.height-20
+            valign: 'bottom'
+            halign: 'justify'
