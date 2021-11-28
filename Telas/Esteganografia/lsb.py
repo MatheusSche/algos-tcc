@@ -17,13 +17,17 @@ class LSB():
 
     def text2uint8mask(self, msg):
         msgarr = np.frombuffer(msg.encode(), dtype=np.uint8)
+        print(msgarr)
         msglen = msgarr.size
         maskarr = np.zeros(msglen * 8, dtype=np.uint8)
         
         arrind = 0
         for char in msgarr:
             for shift in range(8):
-                
+                if(arrind == 2):
+                    print(char)
+                    print(shift)
+                    print(char & (0x1 << (7 - shift)))
                 if(arrind == maskarr.size):
                     break
                 if(char & (0x1 << (7 - shift))):
@@ -31,6 +35,9 @@ class LSB():
                 else:
                     maskarr[arrind] = 0
                 arrind += 1
+
+                if(arrind == 8):
+                    print(maskarr[:8])
         
         return maskarr
 
@@ -53,6 +60,8 @@ class LSB():
     def lsb_encode(self, data, message):
         enc_msg = message + DELIM    
         enc_mask = self.text2uint8mask(enc_msg)   
+        print(data.size, enc_mask.size)
+        print(data)
         enc_data = self.apply_LSB(data, enc_mask)
         
         return enc_data
@@ -60,7 +69,7 @@ class LSB():
 
     def encode(self, image, message):
         dim = image.shape
-        data = image.ravel()    
+        data = image.ravel()   
         data = self.lsb_encode(data, message)  
         data.shape = (dim)
         image.data = data.tobytes()
@@ -108,17 +117,6 @@ class LSB():
         
         return msg_list
 
-
-    def main_lsb(self, image_path_from, msg):  
-        image_path = image_path_from
-        ds = dicom.dcmread(image_path)
-        message = msg
-        image_array = ds.pixel_array
-        
-        image = self.encode(image_array, message)
-        ds.PixelData = image.tobytes()
-        
-        return ds
 
     def encode_image(self, path_image, text):
         ds = self.open_dicom(path_image)

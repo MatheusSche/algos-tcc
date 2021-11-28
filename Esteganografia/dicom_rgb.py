@@ -23,7 +23,7 @@ def apply_ct_window(img, window):
     return R
 
 
-pasta = 'vessels'
+pasta = 'vessels_2'
 index = 0
 
 for diretorio, subpastas, arquivos in os.walk(pasta):
@@ -31,10 +31,11 @@ for diretorio, subpastas, arquivos in os.walk(pasta):
         path = os.path.join(os.path.realpath(diretorio), arquivo)
      
         INPUT_DICOM_PATH = path
-        OUTPUT_DICOM_PATH = "./vessels_rgb/" + arquivo
-        print(arquivo)
+        OUTPUT_DICOM_PATH = "./vessels_rgb_2/" + arquivo
+  
         ds = pydicom.dcmread(INPUT_DICOM_PATH)
         img = ds.pixel_array # dtype = uint16
+        
         img = img.astype(float)
         img = img*ds.RescaleSlope + ds.RescaleIntercept
         
@@ -51,6 +52,9 @@ for diretorio, subpastas, arquivos in os.walk(pasta):
         
         
         # modify DICOM tags
+        print(ds.PhotometricInterpretation)
+        print(ds.SamplesPerPixel)
+        print(ds.BitsAllocated)
         ds.PhotometricInterpretation = 'RGB'
         ds.SamplesPerPixel = 3
         ds.BitsAllocated = 8
@@ -67,6 +71,7 @@ for diretorio, subpastas, arquivos in os.walk(pasta):
         
         # save pixel data and dicom file
         ds.PixelData = img_bbox.tobytes()
+        
         
         plt.figure(2)
         plt.imshow(ds.pixel_array)
